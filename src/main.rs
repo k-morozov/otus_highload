@@ -1,41 +1,40 @@
 mod api;
+mod error;
+mod handlers;
 mod middleware;
-
-use std::sync::Mutex;
+mod model;
+mod state;
+mod store;
 
 use actix_web::{App, HttpServer, web};
-use actix_web::middleware::from_fn;
-use tracing_actix_web::{TracingLogger};
-
-use api::{app_state::AppState, hello::hello};
+use api::user::user_register;
 use middleware::{DomainRootSpanBuilder, RequestID};
+use state::app_state::AppState;
+use tracing_actix_web::TracingLogger;
+// use crate::error::ServiceError;
 
 fn init_tracing() {
     tracing_subscriber::fmt().with_target(false).init();
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> anyhow::Result<()> {
     init_tracing();
 
-    HttpServer::new(|| {
+    let state = web::Data::new(AppState::new().await?);
+
+    HttpServer::new(move || {
+        let tracing_logger = TracingLogger::<DomainRootSpanBuilder>::new();
+
         App::new()
-            .wrap(TracingLogger::<DomainRootSpanBuilder>::new())            
-            //.wrap(from_fn(add_request_id))
+            .wrap(tracing_logger)
             .wrap(RequestID)
-            /*.wrap_fn(|req, srv| {
-                //let uri = req.uri().to_string();
-                let span = tracing::span!(tracing::Level::INFO, "my span");
-                let _guard = span.enter();
-                srv.call(req)
-            })*/
-            .app_data(web::Data::new(AppState {
-                app_name: String::from("particular message"),
-                counter: Mutex::new(0),
-            }))
-            .service(hello)
+            .app_data(state.clone())
+            .service(user_register)
     })
     .bind("127.0.0.1:8000")?
     .run()
-    .await
+    .await?;
+
+    Ok(())
 }

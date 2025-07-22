@@ -1,11 +1,11 @@
-use std::future::{ready, Ready};
+use std::future::{Ready, ready};
 use std::pin::Pin;
 
-use actix_web::dev::ServiceResponse;
 use actix_web::Error;
-use actix_web::middleware::{Next};
-use actix_web::{body::MessageBody, http::header::{HeaderName, HeaderValue}};
-use actix_web::dev::{Transform, forward_ready, Service, ServiceRequest};
+use actix_web::body::MessageBody;
+use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform, forward_ready};
+use actix_web::http::header::{HeaderName, HeaderValue};
+use actix_web::middleware::Next;
 use uuid::Uuid;
 
 #[deprecated]
@@ -13,7 +13,7 @@ pub async fn add_request_id(
     mut req: ServiceRequest,
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, Error> {
-   let request_id = Uuid::new_v4().to_string();
+    let request_id = Uuid::new_v4().to_string();
 
     req.headers_mut().append(
         HeaderName::from_static("x-request-id"),
@@ -22,7 +22,7 @@ pub async fn add_request_id(
 
     tracing::info!("get request: {:#?}", req.request());
 
-    let res= next.call(req);
+    let res = next.call(req);
     let mut res = res.await?;
 
     res.headers_mut().insert(
@@ -36,21 +36,21 @@ pub async fn add_request_id(
 
 pub struct RequestID;
 
-impl<S, B> Transform<S, ServiceRequest> for RequestID 
-where 
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error=Error>,
+impl<S, B> Transform<S, ServiceRequest> for RequestID
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
-    B: 'static + actix_web::body::MessageBody {
-    
-        type Response = ServiceResponse<B>;
-        type Error = Error;
-        type InitError = ();
-        type Transform = RequestIDService<S>;
-        type Future = Ready<Result<Self::Transform, Self::InitError>>;
+    B: 'static + actix_web::body::MessageBody,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type InitError = ();
+    type Transform = RequestIDService<S>;
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
-        fn new_transform(&self, service: S) -> Self::Future {
-            ready(Ok(RequestIDService { service }))
-        }
+    fn new_transform(&self, service: S) -> Self::Future {
+        ready(Ok(RequestIDService { service }))
+    }
 }
 
 pub struct RequestIDService<S> {
@@ -59,12 +59,12 @@ pub struct RequestIDService<S> {
 
 type LocalBoxFuture<T> = Pin<Box<dyn Future<Output = T> + 'static>>;
 
-impl<S, B> Service<ServiceRequest> for RequestIDService<S> 
-where 
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error=Error>,
+impl<S, B> Service<ServiceRequest> for RequestIDService<S>
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
     S::Future: 'static,
-    B: 'static + actix_web::body::MessageBody {
-
+    B: 'static + actix_web::body::MessageBody,
+{
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Future = LocalBoxFuture<Result<Self::Response, Self::Error>>;
@@ -92,6 +92,5 @@ where
             tracing::info!("prepared response: {:#?}", res.response());
             Ok(res)
         })
-
     }
 }

@@ -1,0 +1,1 @@
+[Postman collection](https://konstantin-3250504.postman.co/workspace/Konstantin's-Workspace~13ec63a9-22d0-4fdc-84cb-35985a5f0509/collection/46484717-80796a92-3a54-4765-b2c3-e7eaaab3bc86?action=share&source=copy-link&creator=46484717)
