@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::store::pg_connection::PgConnection;
-use crate::store::user_repo::UserRepo;
+use crate::repo::user_repo::UserRepo;
 
 pub struct RepoContext {
     user_repo: Box<UserRepo>,

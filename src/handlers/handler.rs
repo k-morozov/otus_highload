@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::error::ServiceError;
-use crate::store::repository::Repository;
+use crate::repo::repository::Repository;
 
 #[async_trait]
 pub trait Handler {

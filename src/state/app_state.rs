@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::error::ServiceError;
 use crate::store::initializer::Initializer;
-use crate::store::repo_context::RepoContext;
+use crate::repo::repo_context::RepoContext;
 
 const URL: &str = "postgres://dev:123@localhost/app_db";
 

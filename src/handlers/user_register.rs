@@ -4,7 +4,7 @@ use tracing::{Level, event};
 use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::UserRegisterRequestBody;
-use crate::store::repository::Repository;
+use crate::repo::repository::Repository;
 
 pub struct UserRegister;
 
