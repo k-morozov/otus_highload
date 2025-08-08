@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use crate::error::ServiceError;
+use crate::repo::repo_context::RepoContext;
 use crate::store::initializer::Initializer;
-use crate::store::repo_context::RepoContext;
 
 const URL: &str = "postgres://dev:123@localhost/app_db";
 
@@ -12,12 +12,12 @@ pub struct AppState {
 
 impl AppState {
     pub async fn new() -> Result<AppState, ServiceError> {
-        let conn = Arc::new(Initializer::create()?);
-        conn.connect(URL).await?;
+        // @todo reduce Arc
+        let pool = Arc::new(Initializer::create(URL).await?);
 
-        Initializer::migrate(conn.as_ref()).await?;
+        Initializer::migrate(pool.as_ref()).await?;
 
-        let ctx = RepoContext::new(conn);
+        let ctx = RepoContext::new(pool);
 
         Ok(AppState { ctx })
     }

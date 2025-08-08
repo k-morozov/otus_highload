@@ -4,13 +4,17 @@ use std::fmt;
 pub enum StoreError {
     ConnectionFailed(String),
     ExecutionFailed(String),
+    TransactionFailed(String),
+    NoData(String),
 }
 
 impl fmt::Display for StoreError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            StoreError::ConnectionFailed(msg) => write!(f, "Connection failed: {}", msg),
-            StoreError::ExecutionFailed(msg) => write!(f, "Execution failed: {}", msg),
+            StoreError::ConnectionFailed(msg) => write!(f, "Connection failed: {msg}"),
+            StoreError::ExecutionFailed(msg) => write!(f, "Execution failed: {msg}"),
+            StoreError::TransactionFailed(msg) => write!(f, "Execution failed: {msg}"),
+            StoreError::NoData(msg) => write!(f, "Execution failed: {msg}"),
         }
     }
 }

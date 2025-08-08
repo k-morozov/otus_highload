@@ -1,44 +1,21 @@
-use crate::store::DatabaseResult;
 use crate::store::error::StoreError;
-use crate::store::pg_connection::PgConnection;
+use crate::store::pool::Pool;
+use crate::store::{DatabaseResult, schema};
 
 pub struct Initializer {}
 
 impl Initializer {
-    pub fn new() -> Self {
-        Initializer {}
-    }
-}
-
-impl Initializer {
-    pub fn create() -> DatabaseResult<PgConnection> {
-        Ok(PgConnection::new())
+    pub async fn create(url: &'_ str) -> DatabaseResult<Pool> {
+        Pool::new(url).await
     }
 
-    pub async fn migrate(conn: &PgConnection) -> DatabaseResult<()> {
-        let query = r#"
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR NOT NULL,
-                email VARCHAR UNIQUE NOT NULL
-            )
-            "#;
-
-        let mut conn = conn.connection.lock().await;
-
-        match conn.as_mut() {
-            Some(c) => {
-                sqlx::query(query)
-                    .execute(c)
-                    .await
-                    .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
-                return Ok(());
-            }
-            None => {
-                return Err(StoreError::ConnectionFailed(
-                    "PgDatabase has empty connection".to_string(),
-                ));
-            }
+    pub async fn migrate(pool: &Pool) -> DatabaseResult<()> {
+        for query in schema::CREATE_TABLES {
+            sqlx::query(query)
+                .execute(pool.as_inner_ref())
+                .await
+                .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
         }
+        Ok(())
     }
 }
