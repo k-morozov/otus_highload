@@ -5,6 +5,7 @@ mod middleware;
 mod model;
 mod state;
 mod store;
+mod repo;
 
 use actix_web::{App, HttpServer, web};
 use api::user::user_register;

@@ -5,12 +5,6 @@ use crate::store::pg_connection::PgConnection;
 pub struct Initializer {}
 
 impl Initializer {
-    pub fn new() -> Self {
-        Initializer {}
-    }
-}
-
-impl Initializer {
     pub fn create() -> DatabaseResult<PgConnection> {
         Ok(PgConnection::new())
     }
@@ -18,15 +12,14 @@ impl Initializer {
     pub async fn migrate(conn: &PgConnection) -> DatabaseResult<()> {
         let query = r#"
             CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
+                id UUID UNIQUE PRIMARY KEY,
                 name VARCHAR NOT NULL,
-                email VARCHAR UNIQUE NOT NULL
+                surname VARCHAR NOT NULL,
+                birth_date DATE NOT NULL
             )
             "#;
 
-        let mut conn = conn.connection.lock().await;
-
-        match conn.as_mut() {
+        match conn.lock().await.as_mut() {
             Some(c) => {
                 sqlx::query(query)
                     .execute(c)

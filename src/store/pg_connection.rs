@@ -1,11 +1,12 @@
 use sqlx::Connection;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, MutexGuard};
 
 use crate::store::DatabaseResult;
 use crate::store::error::StoreError; // seems worth
 
+type TConnection = Option<sqlx::PgConnection>;
 pub struct PgConnection {
-    pub connection: tokio::sync::Mutex<Option<sqlx::PgConnection>>,
+    pub connection: tokio::sync::Mutex<TConnection>,
 }
 
 impl PgConnection {
@@ -26,6 +27,10 @@ impl PgConnection {
         );
 
         Ok(())
+    }
+
+    pub async fn lock(&self) -> MutexGuard<'_, TConnection>{
+        self.connection.lock().await
     }
 
     async fn disconect(&self) -> DatabaseResult<()> {
