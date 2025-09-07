@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct UserRegisterRequestBody {
+    pub login: String,
+    pub password: String,
     pub name: String,
-    surname: String,
-    birth_date: String,
-    gender: u8,
-    interests: Vec<String>,
-    city: String,
+    pub surname: String,
+    pub birth_date: String,
+    pub gender: String,
+    pub interests: Vec<String>,
+    pub city: String,
 }

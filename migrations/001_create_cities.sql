@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS cities (
+    city_id UUID UNIQUE PRIMARY KEY,
+    city_name VARCHAR UNIQUE NOT NULL
+)

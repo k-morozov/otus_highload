@@ -1,0 +1,154 @@
+{
+	"info": {
+		"_postman_id": "8a76e052-ea94-41f6-8f1c-564ca9b8c877",
+		"name": "otus-highload",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46484717",
+		"_collection_link": "https://konstantin-3250504.postman.co/workspace/Konstantin's-Workspace~13ec63a9-22d0-4fdc-84cb-35985a5f0509/collection/46484717-8a76e052-ea94-41f6-8f1c-564ca9b8c877?action=share&source=collection_link&creator=46484717"
+	},
+	"item": [
+		{
+			"name": "register John",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John\",\n    \"login\": \"aka_john\",\n    \"password\": \"123\",\n    \"surname\": \"Doe\",\n    \"birth_date\": \"01-01-2000\",\n    \"gender\": \"male\",\n    \"interests\": [\n        \"cooking\",\n        \"cars\"\n    ],\n    \"city\": \"Dubai2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register Alisa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Alisa\",\n    \"login\": \"aka_alisa\",\n    \"password\": \"123a\",\n    \"surname\": \"Mac'onel\",\n    \"birth_date\": \"01-01-2001\",\n    \"gender\": \"female\",\n    \"interests\": [\n        \"walking\",\n        \"reading\",\n        \"cooking\"\n    ],\n    \"city\": \"London\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register Elisa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Elisa\",\n    \"login\": \"aka_elisa\",\n    \"password\": \"123b\",\n    \"surname\": \"Mac'onel\",\n    \"birth_date\": \"01-01-2001\",\n    \"gender\": \"female\",\n    \"interests\": [\n        \"walking\",\n        \"reading\"\n    ],\n    \"city\": \"London\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/user/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login John",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"aka_john\",\n    \"password\": \"123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/user/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get alisa from john",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Beaver eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzNGFmNWM0NC0xMWI0LTQ5MmYtOTAyNi00NDljYjgzYzQ2NzEiLCJleHAiOjE3NTcyNzUyNTYsImlhdCI6MTc1NzE4ODg1Nn0.3rCnF_pF9jRsoF8MW50CoUvSnqWF6kG0hsCH-uho3x4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/user/get/b72225c2-bf96-4664-8908-59eb605746c6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"get",
+						"b72225c2-bf96-4664-8908-59eb605746c6"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

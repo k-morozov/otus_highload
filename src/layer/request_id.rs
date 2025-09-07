@@ -2,37 +2,35 @@ use std::future::{Ready, ready};
 use std::pin::Pin;
 
 use actix_web::Error;
-use actix_web::body::MessageBody;
 use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform, forward_ready};
 use actix_web::http::header::{HeaderName, HeaderValue};
-use actix_web::middleware::Next;
 use uuid::Uuid;
 
-#[deprecated]
-pub async fn add_request_id(
-    mut req: ServiceRequest,
-    next: Next<impl MessageBody>,
-) -> Result<ServiceResponse<impl MessageBody>, Error> {
-    let request_id = Uuid::new_v4().to_string();
-
-    req.headers_mut().append(
-        HeaderName::from_static("x-request-id"),
-        HeaderValue::from_str(request_id.as_str()).unwrap(),
-    );
-
-    tracing::info!("get request: {:#?}", req.request());
-
-    let res = next.call(req);
-    let mut res = res.await?;
-
-    res.headers_mut().insert(
-        HeaderName::from_static("x-request-id"),
-        HeaderValue::from_str(&request_id).unwrap(),
-    );
-
-    tracing::info!("prepared response: {:#?}", res.response());
-    Ok(res)
-}
+// #[deprecated]
+// pub async fn add_request_id(
+// mut req: ServiceRequest,
+// next: Next<impl MessageBody>,
+// ) -> Result<ServiceResponse<impl MessageBody>, Error> {
+// let request_id = Uuid::new_v4().to_string();
+//
+// req.headers_mut().append(
+// HeaderName::from_static("x-request-id"),
+// HeaderValue::from_str(request_id.as_str()).unwrap(),
+// );
+//
+// tracing::info!("get request: {:#?}", req.request());
+//
+// let res = next.call(req);
+// let mut res = res.await?;
+//
+// res.headers_mut().insert(
+// HeaderName::from_static("x-request-id"),
+// HeaderValue::from_str(&request_id).unwrap(),
+// );
+//
+// tracing::info!("prepared response: {:#?}", res.response());
+// Ok(res)
+// }
 
 pub struct RequestID;
 
