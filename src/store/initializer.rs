@@ -1,6 +1,6 @@
+use crate::store::DatabaseResult;
 use crate::store::error::StoreError;
 use crate::store::pool::Pool;
-use crate::store::{DatabaseResult, schema};
 
 pub struct Initializer {}
 
@@ -10,12 +10,10 @@ impl Initializer {
     }
 
     pub async fn migrate(pool: &Pool) -> DatabaseResult<()> {
-        for query in schema::CREATE_TABLES {
-            sqlx::query(query)
-                .execute(pool.as_inner_ref())
-                .await
-                .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
-        }
+        sqlx::migrate!()
+            .run(pool.as_inner_ref())
+            .await
+            .map_err(|er| StoreError::MigrationFailed(er.to_string()))?;
         Ok(())
     }
 }
