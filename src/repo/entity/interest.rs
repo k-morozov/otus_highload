@@ -25,7 +25,7 @@ impl Builder {
         })
     }
 
-    pub fn add_interes(&mut self, interest_id: uuid::Uuid, interest_name: String) -> &mut Self {
+    pub fn add_interest(&mut self, interest_id: uuid::Uuid, interest_name: String) -> &mut Self {
         self.interests.push((interest_id, interest_name));
         self
     }

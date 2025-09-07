@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use sqlx::Execute;
+use sqlx::{Execute, Row};
 
 use crate::repo::entity::interest;
 use crate::repo::repository::Repository;
@@ -11,6 +11,30 @@ pub struct Interests {}
 impl Interests {
     pub fn new() -> Self {
         Self {}
+    }
+
+    pub async fn get_id<'a, E: sqlx::PgExecutor<'a>>(
+        &self,
+        e: E,
+        interest_name: &str,
+    ) -> DatabaseResult<uuid::Uuid> {
+        let raw_query = "
+            SELECT interest_id FROM interests
+            WHERE interest_name=$1
+        ";
+
+        let query = sqlx::query(raw_query).bind(interest_name);
+
+        tracing::info!("interests repo call get_id with query={}", query.sql());
+
+        let row = query
+            .fetch_one(e)
+            .await
+            .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
+
+        let interest_id: uuid::Uuid = row.get(0);
+
+        return Ok(interest_id);
     }
 }
 
@@ -32,7 +56,8 @@ impl Repository<interest::Entity> for Interests {
                 interest_id,
                 interest_name
             ) 
-            VALUES {};
+            VALUES {}
+            ON CONFLICT DO NOTHING;
         ",
             inserted.join(", ")
         );

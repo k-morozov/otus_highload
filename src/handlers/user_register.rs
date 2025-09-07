@@ -46,12 +46,11 @@ impl Handler for UserRegister {
         tracing::info!("got city_id={} for city {}", city_id, entity.city_name);
 
         let mut builder = interest::Builder::new();
-        let mut interests_id = Vec::new();
 
         for interest_name in &model.interests {
             let interest_id = Uuid::new_v4();
-            builder.add_interes(interest_id, interest_name.clone());
-            interests_id.push(interest_id);
+            builder.add_interest(interest_id, interest_name.clone());
+            // interests_id.push(interest_id);
 
             tracing::info!(
                 "got interest_id={} for interest {:?}",
@@ -63,6 +62,7 @@ impl Handler for UserRegister {
         let entity = builder.build()?;
 
         let _city_res = ctx.interest_repo().create(tx.as_mut(), &entity).await?;
+        // let _city_res = ctx.interest_repo().get_ids(tx.as_mut(), user_id).await?;
 
         let user_id = Uuid::new_v4();
         let entity = user::Builder::new()
@@ -86,10 +86,19 @@ impl Handler for UserRegister {
         let mut builder = user_interests::Builder::new();
         builder.add_user_id(user_id);
 
-        for interest_id in &interests_id {
-            builder.add_interest_id(*interest_id);
+        for interest_name in &model.interests {
+            let interest_id = ctx
+                .interest_repo()
+                .get_id(tx.as_mut(), interest_name)
+                .await?;
+            builder.add_interest_id(interest_id);
 
-            tracing::info!("add interest_id={} for user_id {}", interest_id, user_id);
+            tracing::info!(
+                "add interest {} with interest_id={} for user_id {}",
+                interest_name,
+                interest_id,
+                user_id
+            );
         }
         let entity = builder.build()?;
 

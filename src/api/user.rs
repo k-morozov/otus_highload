@@ -1,7 +1,6 @@
-use actix_web::{HttpMessage, HttpRequest, HttpResponse, web};
+use actix_web::{HttpRequest, HttpResponse, web};
 use futures_util::StreamExt as _;
 use tracing::{error, info};
-use uuid::Uuid;
 
 use crate::handlers::handler::Handler;
 use crate::handlers::{UserGet, UserLogin, UserRegister};
