@@ -1,7 +1,6 @@
 pub mod repo_context;
 pub mod repository;
 
-pub mod cities;
 pub mod entity;
 pub mod interests;
 pub mod user_credentials;

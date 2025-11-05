@@ -17,6 +17,9 @@ use crate::utils;
 
 pub struct UserRegister;
 
+impl UserRegister {
+}
+
 #[async_trait]
 impl Handler for UserRegister {
     type TModel = UserRegisterRequestBody;
@@ -33,28 +36,31 @@ impl Handler for UserRegister {
         })?;
 
         let entity = model.clone().into();
-        let mut city_dao = PgCityDao::new(tx.as_mut());
 
-        let city_res = city_dao.get_id(&entity).await?;
+        let city_id = {
+            let mut city_dao = PgCityDao::new(tx.as_mut());
+            let city_res = city_dao.get_id(&entity).await?;
 
-        let city_id = match city_res {
-            Some(id) => id,
-            None => {
-                let _ = city_dao.create(&entity).await?;
-                let city_res = city_dao.get_id(&entity).await?;
+            let city_id = match city_res {
+                Some(id) => id,
+                None => {
+                    let _ = city_dao.create(&entity).await?;
+                    let city_res = city_dao.get_id(&entity).await?;
 
-                city_res.expect("recently was created")
-            }
+                    city_res.expect("recently was created")
+                }
+            };
+            tracing::info!("got city_id={} for city {}", city_id, entity.city_name);
+
+            city_id
         };
-
-        tracing::info!("got city_id={} for city {}", city_id, entity.city_name);
+        
 
         let mut builder = interest::Builder::new();
 
         for interest_name in &model.interests {
             let interest_id = Uuid::new_v4();
             builder.add_interest(interest_id, interest_name.clone());
-            // interests_id.push(interest_id);
 
             tracing::info!(
                 "got interest_id={} for interest {:?}",
@@ -66,7 +72,6 @@ impl Handler for UserRegister {
         let entity = builder.build()?;
 
         let _city_res = ctx.interest_repo().create(tx.as_mut(), &entity).await?;
-        // let _city_res = ctx.interest_repo().get_ids(tx.as_mut(), user_id).await?;
 
         let user_id = Uuid::new_v4();
         let entity = user::Builder::new()

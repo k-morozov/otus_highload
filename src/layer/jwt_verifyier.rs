@@ -5,7 +5,7 @@ use actix_web::middleware::Next;
 
 use crate::auth::{SECRET_JWT_TOKEN, verify_jwt_token};
 
-const BEAVER_VALUE: &'static str = "Beaver ";
+const BEARER_VALUE: &'static str = "Bearer ";
 
 pub async fn jwt_verify(
     req: ServiceRequest,
@@ -16,8 +16,10 @@ pub async fn jwt_verify(
         .get(actix_web::http::header::AUTHORIZATION)
         .and_then(|auth_header| auth_header.to_str().ok())
         .and_then(|auth_header| {
-            if auth_header.starts_with(BEAVER_VALUE) {
-                Some(auth_header[BEAVER_VALUE.len()..].to_owned())
+            tracing::debug!("jwt_verify: auth_header: {auth_header:?}");
+
+            if auth_header.starts_with(BEARER_VALUE) {
+                Some(auth_header[BEARER_VALUE.len()..].to_owned())
             } else {
                 None
             }

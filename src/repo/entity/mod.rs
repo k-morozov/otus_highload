@@ -1,4 +1,3 @@
-pub mod city;
 pub mod error;
 pub mod interest;
 pub mod user;
