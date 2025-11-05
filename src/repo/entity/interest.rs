@@ -5,6 +5,7 @@ pub struct Entity {
 }
 
 pub struct Builder {
+    // hash?
     interests: Vec<(uuid::Uuid, String)>,
 }
 

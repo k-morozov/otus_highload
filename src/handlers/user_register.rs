@@ -4,8 +4,8 @@ use uuid::Uuid;
 
 use crate::dao::base_dao::BaseDao;
 use crate::dao::city_aux_dao::CityAuxDao;
-use crate::dao::pg_city_dao::PgCityDao;
 use crate::dao::city_entity::CityEntity;
+use crate::dao::pg_city_dao::PgCityDao;
 use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::UserRegisterRequestBody;
@@ -17,8 +17,7 @@ use crate::utils;
 
 pub struct UserRegister;
 
-impl UserRegister {
-}
+impl UserRegister {}
 
 #[async_trait]
 impl Handler for UserRegister {
@@ -54,22 +53,22 @@ impl Handler for UserRegister {
 
             city_id
         };
-        
 
-        let mut builder = interest::Builder::new();
+        let entity = model
+            .interests
+            .iter()
+            .fold(interest::Builder::new(), |mut b, interest| {
+                let interest_id = Uuid::new_v4();
+                b.add_interest(interest_id, interest.clone());
 
-        for interest_name in &model.interests {
-            let interest_id = Uuid::new_v4();
-            builder.add_interest(interest_id, interest_name.clone());
-
-            tracing::info!(
-                "got interest_id={} for interest {:?}",
-                interest_id,
-                interest_name
-            );
-        }
-
-        let entity = builder.build()?;
+                tracing::info!(
+                    "got interest_id={} for interest {:?}",
+                    interest_id,
+                    interest
+                );
+                b
+            })
+            .build()?;
 
         let _city_res = ctx.interest_repo().create(tx.as_mut(), &entity).await?;
 
