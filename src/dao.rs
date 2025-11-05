@@ -3,3 +3,7 @@ pub mod base_dao;
 pub mod city_aux_dao;
 pub mod city_entity;
 pub mod pg_city_dao;
+pub mod interest_entity;
+pub mod error;
+pub mod pg_interests_dao;
+pub mod interests_aux_dao;

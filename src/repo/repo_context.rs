@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use crate::repo::interests::Interests;
 use crate::repo::user_credentials::UserCredentials;
 use crate::repo::user_interests::UserInterests;
 use crate::repo::users::Users;
@@ -22,9 +21,6 @@ impl RepoContext {
         self.0.user_repo.as_ref()
     }
 
-    pub fn interest_repo(&self) -> &Interests {
-        self.0.interest_repo.as_ref()
-    }
 
     pub fn user_interest_repo(&self) -> &UserInterests {
         self.0.user_interest_repo.as_ref()
@@ -38,7 +34,6 @@ impl RepoContext {
 struct RepoContextImpl {
     pool: Arc<Pool>,
     user_repo: Box<Users>,
-    interest_repo: Box<Interests>,
     user_interest_repo: Box<UserInterests>,
     user_credentials_repo: Box<UserCredentials>,
 }
@@ -49,14 +44,12 @@ unsafe impl Send for RepoContextImpl {}
 impl RepoContextImpl {
     fn new(pool: Arc<Pool>) -> Self {
         let user_repo = Box::new(Users::new());
-        let interest_repo = Box::new(Interests::new());
         let user_interest_repo = Box::new(UserInterests::new());
         let user_credentials_repo = Box::new(UserCredentials::new());
 
         Self {
             pool,
             user_repo,
-            interest_repo,
             user_interest_repo,
             user_credentials_repo,
         }

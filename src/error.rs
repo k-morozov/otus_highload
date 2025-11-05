@@ -1,12 +1,14 @@
 use std::fmt;
 
-use crate::repo::entity::error::BuilderError;
+use crate::repo::entity;
+use crate::dao;
 use crate::store::error::StoreError;
 
 #[derive(Debug)]
 pub enum ServiceError {
     Database(StoreError),
-    Mapping(BuilderError),
+    Mapping(entity::error::BuilderError),
+    Mapping2(dao::error::BuilderError),
     Auth(String),
 }
 
@@ -15,6 +17,7 @@ impl fmt::Display for ServiceError {
         match self {
             ServiceError::Database(e) => write!(f, "Store error: {e}"),
             ServiceError::Mapping(e) => write!(f, "Builder error: {e}"),
+            ServiceError::Mapping2(e) => write!(f, "Builder error: {e}"),
             ServiceError::Auth(e) => write!(f, "Auth error: {e}"),
         }
     }
@@ -26,9 +29,15 @@ impl From<StoreError> for ServiceError {
     }
 }
 
-impl From<BuilderError> for ServiceError {
-    fn from(er: BuilderError) -> Self {
+impl From<entity::error::BuilderError> for ServiceError {
+    fn from(er: entity::error::BuilderError) -> Self {
         ServiceError::Mapping(er)
+    }
+}
+
+impl From<dao::error::BuilderError> for ServiceError {
+    fn from(er: dao::error::BuilderError) -> Self {
+        ServiceError::Mapping2(er)
     }
 }
 

@@ -5,11 +5,15 @@ use uuid::Uuid;
 use crate::dao::base_dao::BaseDao;
 use crate::dao::city_aux_dao::CityAuxDao;
 use crate::dao::city_entity::CityEntity;
+use crate::dao::interest_entity::Builder;
+use crate::dao::error::BuilderError;
+use crate::dao::interests_aux_dao::InterestsAuxDao;
 use crate::dao::pg_city_dao::PgCityDao;
+use crate::dao::pg_interests_dao::PgInterestsDao;
 use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::UserRegisterRequestBody;
-use crate::repo::entity::{interest, user, user_credentials, user_interests};
+use crate::repo::entity::{user, user_credentials, user_interests};
 use crate::repo::repo_context::RepoContext;
 use crate::repo::repository::Repository;
 use crate::store::error::StoreError;
@@ -57,7 +61,7 @@ impl Handler for UserRegister {
         let entity = model
             .interests
             .iter()
-            .fold(interest::Builder::new(), |mut b, interest| {
+            .fold(Builder::new(), |mut b, interest| {
                 let interest_id = Uuid::new_v4();
                 b.add_interest(interest_id, interest.clone());
 
@@ -70,7 +74,8 @@ impl Handler for UserRegister {
             })
             .build()?;
 
-        let _city_res = ctx.interest_repo().create(tx.as_mut(), &entity).await?;
+        let mut interests_dao = PgInterestsDao::new(tx.as_mut());
+        let _interests_res = interests_dao.create(&entity).await?;
 
         let user_id = Uuid::new_v4();
         let entity = user::Builder::new()
@@ -94,11 +99,9 @@ impl Handler for UserRegister {
         let mut builder = user_interests::Builder::new();
         builder.add_user_id(user_id);
 
+        let mut interests_dao = PgInterestsDao::new(tx.as_mut());
         for interest_name in &model.interests {
-            let interest_id = ctx
-                .interest_repo()
-                .get_id(tx.as_mut(), interest_name)
-                .await?;
+            let interest_id = interests_dao.get_id_by_name(interest_name).await?;
             builder.add_interest_id(interest_id);
 
             tracing::info!(

@@ -1,6 +1,6 @@
 use super::error::BuilderError;
 
-pub struct Entity {
+pub struct InterestEntity {
     pub interests: Vec<(uuid::Uuid, String)>,
 }
 
@@ -16,12 +16,12 @@ impl Builder {
         }
     }
 
-    pub fn build(&mut self) -> Result<Entity, BuilderError> {
+    pub fn build(&mut self) -> Result<InterestEntity, BuilderError> {
         if self.interests.is_empty() {
             return Err(BuilderError::NotEnoughElement("no interests".to_string()));
         }
 
-        Ok(Entity {
+        Ok(InterestEntity {
             interests: self.interests.clone(),
         })
     }
