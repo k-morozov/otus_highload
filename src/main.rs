@@ -1,5 +1,6 @@
 mod api;
 mod auth;
+mod dao;
 mod error;
 mod handlers;
 mod layer;

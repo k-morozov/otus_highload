@@ -23,9 +23,9 @@ impl RepoContext {
         self.0.user_repo.as_ref()
     }
 
-    pub fn city_repo(&self) -> &Cities {
-        self.0.city_repo.as_ref()
-    }
+    // pub fn city_repo(&self) -> &Cities {
+    //     self.0.city_repo.as_ref()
+    // }
 
     pub fn interest_repo(&self) -> &Interests {
         self.0.interest_repo.as_ref()
@@ -43,7 +43,7 @@ impl RepoContext {
 struct RepoContextImpl {
     pool: Arc<Pool>,
     user_repo: Box<Users>,
-    city_repo: Box<Cities>,
+    // city_repo: Box<Cities>,
     interest_repo: Box<Interests>,
     user_interest_repo: Box<UserInterests>,
     user_credentials_repo: Box<UserCredentials>,
@@ -55,7 +55,7 @@ unsafe impl Send for RepoContextImpl {}
 impl RepoContextImpl {
     fn new(pool: Arc<Pool>) -> Self {
         let user_repo = Box::new(Users::new());
-        let city_repo = Box::new(Cities::new());
+        // let city_repo = Box::new(Cities::new());
         let interest_repo = Box::new(Interests::new());
         let user_interest_repo = Box::new(UserInterests::new());
         let user_credentials_repo = Box::new(UserCredentials::new());
@@ -63,7 +63,7 @@ impl RepoContextImpl {
         Self {
             pool,
             user_repo,
-            city_repo,
+            // city_repo,
             interest_repo,
             user_interest_repo,
             user_credentials_repo,

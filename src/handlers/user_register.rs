@@ -2,6 +2,10 @@ use async_trait::async_trait;
 use tracing::Level;
 use uuid::Uuid;
 
+use crate::dao::base_dao::BaseDao;
+use crate::dao::city_aux_dao::CityAuxDao;
+use crate::dao::pg_city_dao::PgCityDao;
+use crate::dao::city_entity::CityEntity;
 use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::UserRegisterRequestBody;
@@ -29,15 +33,15 @@ impl Handler for UserRegister {
         })?;
 
         let entity = model.clone().into();
+        let mut city_dao = PgCityDao::new(tx.as_mut());
 
-        let city_res = ctx.city_repo().get_id(tx.as_mut(), &entity).await?;
+        let city_res = city_dao.get_id(&entity).await?;
 
         let city_id = match city_res {
             Some(id) => id,
             None => {
-                let _city_res = ctx.city_repo().create(tx.as_mut(), &entity).await?;
-
-                let city_res = ctx.city_repo().get_id(tx.as_mut(), &entity).await?;
+                let _ = city_dao.create(&entity).await?;
+                let city_res = city_dao.get_id(&entity).await?;
 
                 city_res.expect("recently was created")
             }
