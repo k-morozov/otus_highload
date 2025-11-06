@@ -6,41 +6,21 @@ use crate::repo::repository::Repository;
 use crate::store::DatabaseResult;
 use crate::store::error::StoreError;
 
+use super::interests_aux::InterestsAux;
+
 pub struct Interests {}
 
 impl Interests {
     pub fn new() -> Self {
         Self {}
     }
-
-    pub async fn get_id<'a, E: sqlx::PgExecutor<'a>>(
-        &self,
-        e: E,
-        interest_name: &str,
-    ) -> DatabaseResult<uuid::Uuid> {
-        let raw_query = "
-            SELECT interest_id FROM interests
-            WHERE interest_name=$1
-        ";
-
-        let query = sqlx::query(raw_query).bind(interest_name);
-
-        tracing::info!("interests repo call get_id with query={}", query.sql());
-
-        let row = query
-            .fetch_one(e)
-            .await
-            .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
-
-        let interest_id: uuid::Uuid = row.get(0);
-
-        return Ok(interest_id);
-    }
 }
 
 #[async_trait]
-impl Repository<interest::Entity> for Interests {
-    async fn create<'a, E: sqlx::PgExecutor<'a>>(
+impl Repository<uuid::Uuid, interest::Entity> for Interests {
+    type TDatabase = sqlx::Postgres;
+
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &interest::Entity,
@@ -76,5 +56,40 @@ impl Repository<interest::Entity> for Interests {
             .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
 
         return Ok(());
+    }
+
+    async fn get_by_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
+        &self,
+        _e: E,
+        _id: &uuid::Uuid,
+    ) -> DatabaseResult<Option<interest::Entity>> {
+        unreachable!()
+    }
+}
+
+#[async_trait]
+impl InterestsAux<uuid::Uuid, interest::Entity> for Interests {
+    async fn get_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
+        &self,
+        e: E,
+        interest_name: &str,
+    ) -> DatabaseResult<uuid::Uuid> {
+        let raw_query = "
+            SELECT interest_id FROM interests
+            WHERE interest_name=$1
+        ";
+
+        let query = sqlx::query(raw_query).bind(interest_name);
+
+        tracing::info!("interests repo call get_id with query={}", query.sql());
+
+        let row = query
+            .fetch_one(e)
+            .await
+            .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
+
+        let interest_id: uuid::Uuid = row.get(0);
+
+        return Ok(interest_id);
     }
 }

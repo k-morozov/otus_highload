@@ -59,8 +59,10 @@ impl UserCredentials {
 }
 
 #[async_trait]
-impl Repository<user_credentials::Entity> for UserCredentials {
-    async fn create<'a, E: sqlx::PgExecutor<'a>>(
+impl Repository<uuid::Uuid, user_credentials::Entity> for UserCredentials {
+    type TDatabase = sqlx::Postgres;
+
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &user_credentials::Entity,
@@ -89,5 +91,13 @@ impl Repository<user_credentials::Entity> for UserCredentials {
             .map_err(|e| StoreError::ExecutionFailed(e.to_string()))?;
 
         return Ok(());
+    }
+
+    async fn get_by_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
+        &self,
+        _e: E,
+        _id: &uuid::Uuid,
+    ) -> DatabaseResult<Option<user_credentials::Entity>> {
+        unreachable!()
     }
 }

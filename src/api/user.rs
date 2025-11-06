@@ -78,7 +78,19 @@ pub async fn user_get(
         .await
         .map_err(|e| {
             error!("Failed with error: {}", e);
-            actix_web::error::ErrorInternalServerError("internal server error")
+            match e {
+                crate::error::ServiceError::Database(store_error) => match store_error {
+                    crate::store::error::StoreError::NoData(_) => {
+                        return actix_web::error::ErrorNotFound("user not found");
+                    }
+                    _ => {
+                        return actix_web::error::ErrorInternalServerError("internal server error");
+                    }
+                },
+                _ => {
+                    return actix_web::error::ErrorInternalServerError("internal server error");
+                }
+            }
         })?;
 
     Ok(HttpResponse::Ok().json(response))

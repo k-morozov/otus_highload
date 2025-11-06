@@ -1,10 +1,15 @@
+use std::str::FromStr;
+
 use async_trait::async_trait;
 use tracing::Level;
+use uuid::Uuid;
 
 use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::{UserGetRequestBody, UserGetResponseBody};
 use crate::repo::repo_context::RepoContext;
+use crate::repo::repository::Repository;
+use crate::store::error::StoreError::NoData;
 
 pub struct UserGet;
 
@@ -21,14 +26,23 @@ impl Handler for UserGet {
 
         let res = ctx
             .user_repo()
-            .get_by_id(ctx.get_pool().as_inner_ref(), &model.id)
+            .get_by_id(
+                ctx.get_pool().as_inner_ref(),
+                &Uuid::from_str(&model.id)
+                    .map_err(|_| ServiceError::Auth("Broken id".to_string()))?,
+            )
             .await?;
 
-        let response = Self::TResponse {
-            name: res.0,
-            surname: res.1,
-        };
-
-        Ok(response)
+        match res {
+            Some(entity) => {
+                return Ok(Self::TResponse {
+                    name: entity.name,
+                    surname: entity.surname,
+                });
+            }
+            None => {
+                return Err(ServiceError::Database(NoData("User not found".to_string())));
+            }
+        }
     }
 }

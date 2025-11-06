@@ -3,12 +3,12 @@ use crate::repo::entity::error::BuilderError;
 
 pub struct Entity {
     pub user_id: uuid::Uuid,
-    pub login: String,
+    pub login: Option<String>,
     pub name: String,
     pub surname: String,
-    pub birth_date: String,
-    pub gender: String,
-    pub city_id: uuid::Uuid,
+    pub birth_date: Option<String>,
+    pub gender: Option<String>,
+    pub city_id: Option<uuid::Uuid>,
 }
 
 pub struct Builder {
@@ -42,12 +42,12 @@ impl Builder {
 
         Ok(Entity {
             user_id,
-            login: model.login,
+            login: Some(model.login),
             name: model.name,
             surname: model.surname,
-            birth_date: model.birth_date,
-            gender: model.gender,
-            city_id,
+            birth_date: Some(model.birth_date),
+            gender: Some(model.gender),
+            city_id: Some(city_id),
         })
     }
 

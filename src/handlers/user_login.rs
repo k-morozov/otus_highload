@@ -6,6 +6,7 @@ use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::{UserLoginRequestBody, UserLoginResponseBody};
 use crate::repo::repo_context::RepoContext;
+use crate::repo::users_aux::UsersAux;
 use crate::utils;
 
 pub struct UserLogin;
