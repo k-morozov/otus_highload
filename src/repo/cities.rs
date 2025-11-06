@@ -18,10 +18,10 @@ impl Cities {
 }
 
 #[async_trait]
-impl Repository<city::Entity> for Cities {
+impl Repository<Uuid, city::Entity> for Cities {
     type TDatabase = sqlx::Postgres;
 
-    async fn create<'a, E: sqlx::Executor<'a, Database= Self::TDatabase>>(
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &city::Entity,
@@ -47,10 +47,18 @@ impl Repository<city::Entity> for Cities {
 
         return Ok(());
     }
+
+    async fn get_by_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
+        &self,
+        _e: E,
+        _id: &Uuid,
+    ) -> DatabaseResult<Option<city::Entity>> {
+        todo!()
+    }
 }
 
 #[async_trait]
-impl CityAux<city::Entity> for Cities {
+impl CityAux<Uuid, city::Entity> for Cities {
     async fn get_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,

@@ -17,10 +17,10 @@ impl Interests {
 }
 
 #[async_trait]
-impl Repository<interest::Entity> for Interests {
+impl Repository<uuid::Uuid, interest::Entity> for Interests {
     type TDatabase = sqlx::Postgres;
 
-    async fn create<'a, E: sqlx::Executor<'a, Database=Self::TDatabase>>(
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &interest::Entity,
@@ -57,10 +57,18 @@ impl Repository<interest::Entity> for Interests {
 
         return Ok(());
     }
+
+    async fn get_by_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
+        &self,
+        _e: E,
+        _id: &uuid::Uuid,
+    ) -> DatabaseResult<Option<interest::Entity>> {
+        unreachable!()
+    }
 }
 
 #[async_trait]
-impl InterestsAux<interest::Entity> for Interests {
+impl InterestsAux<uuid::Uuid, interest::Entity> for Interests {
     async fn get_id<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
