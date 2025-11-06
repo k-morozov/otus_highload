@@ -5,6 +5,7 @@ use crate::error::ServiceError;
 use crate::handlers::handler::Handler;
 use crate::model::{UserGetRequestBody, UserGetResponseBody};
 use crate::repo::repo_context::RepoContext;
+use crate::repo::users_aux::UsersAux;
 
 pub struct UserGet;
 

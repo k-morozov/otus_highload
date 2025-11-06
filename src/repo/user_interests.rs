@@ -16,7 +16,9 @@ impl UserInterests {
 
 #[async_trait]
 impl Repository<user_interests::Entity> for UserInterests {
-    async fn create<'a, E: sqlx::PgExecutor<'a>>(
+    type TDatabase = sqlx::Postgres;
+
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &user_interests::Entity,

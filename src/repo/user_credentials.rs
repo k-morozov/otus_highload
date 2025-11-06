@@ -60,7 +60,9 @@ impl UserCredentials {
 
 #[async_trait]
 impl Repository<user_credentials::Entity> for UserCredentials {
-    async fn create<'a, E: sqlx::PgExecutor<'a>>(
+    type TDatabase = sqlx::Postgres;
+
+    async fn create<'a, E: sqlx::Executor<'a, Database = Self::TDatabase>>(
         &self,
         e: E,
         entity: &user_credentials::Entity,
